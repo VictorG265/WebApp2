@@ -1,35 +1,33 @@
-import { Table, TableContainer, Button, TableBody, TableRow, TableHead, Paper, TableCell } from "@mui/material";
-import React from "react";
+import React from 'react';
 
-const ClientTable = ({ clients, delClient }) => {
-
+function Table({ users, onDelete }) {
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Surname</TableCell>
-            <TableCell>phone</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {clients.map((client, index) => (
-            <TableRow key={index}>
-              <TableCell>{client.name}</TableCell>
-              <TableCell>{client.surname}</TableCell>
-              <TableCell>{client.phone}</TableCell>
-              <TableCell>
-                <Button varianted="containded" color="secondary"
-                  onClick={() => delClient(client.id)}>Delete</Button>
-              </TableCell>
-            </TableRow>
+    <div>
+      <h2>Users</h2>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Id</th><th>FirstName</th><th>LastName</th><th>Email</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{user.firstName}</td>
+              <td>{user.lastName}</td>
+              <td>{user.email}</td>
+              <td>
+                <button onClick={() => onDelete(index)} style={{ backgroundColor: 'red', color: 'white' }}>
+                  Delete
+                </button>
+              </td>
+            </tr>
           ))}
-
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
-};
+}
 
-export default ClientTable;
+export default Table;
