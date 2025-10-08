@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Table({ users, onDelete }) {
+function Table({ users, onDelete, onEdit }) {
   return (
     <div>
       <h2>Users</h2>
@@ -18,9 +18,8 @@ function Table({ users, onDelete }) {
               <td>{user.lastName}</td>
               <td>{user.email}</td>
               <td>
-                <button onClick={() => onDelete(index)} style={{ backgroundColor: 'red', color: 'white' }}>
-                  Delete
-                </button>
+                <button onClick={() => onEdit(index)} style={{ marginRight:'8px'}}>Edit</button>
+                <button onClick={() => onDelete(index)} style={{ backgroundColor: 'red', color: 'white' }}>Delete</button>
               </td>
             </tr>
           ))}
