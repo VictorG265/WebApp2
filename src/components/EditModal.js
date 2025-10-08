@@ -18,15 +18,31 @@ function EditModal({ user, onConfirm, onClose }) {
   };
 
   return (
-    <div className="modal">
+    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>Edit User</h2>
       <form onSubmit={handleSubmit}>
-        <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First Name" />
-        <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last Name" />
-        <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-        <button type="submit">Confirm</button>
-        <button type="button" onClick={onClose}>Cancel</button>
+        <div>
+          <p>
+            First name:
+            <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First Name" />
+          </p>
+          <p>
+            Last name:
+            <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last Name" />
+          </p>
+          <p>
+            email:
+            <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
+          </p>
+        </div>
+
+        <div>
+          <button type="submit">Confirm</button>
+          <button type="button" onClick={onClose}>Cancel</button>
+        </div>
       </form>
+    </div>
     </div>
   );
 }

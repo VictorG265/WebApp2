@@ -7,7 +7,7 @@ function Table({ users, onDelete, onEdit }) {
       <table border="1">
         <thead>
           <tr>
-            <th>Id</th><th>FirstName</th><th>LastName</th><th>Email</th><th>Action</th>
+            <th>№</th><th>FirstName</th><th>LastName</th><th>Email</th><th>Action</th>
           </tr>
         </thead>
         <tbody>

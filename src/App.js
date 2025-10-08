@@ -41,14 +41,6 @@ function App() {
     setEditingIndex(null);
   };
 
-  {isModalOpen && (
-    <EditModal
-      user={users[editingIndex]}
-      onConfirm={confirmEdit}
-      onClose={() => setIsModalOpen(false)}
-    />
-  )}
-
   return (
     <div className="App">
       <h1>User Management</h1>
@@ -60,8 +52,15 @@ function App() {
       <Table
         users={users}
         onDelete={deleteUser}
-        onEdit={(index) => setEditingIndex(index)}
+        onEdit={openEditModal}
       />
+      {isModalOpen && (
+        <EditModal
+          user={users[editingIndex]}
+          onConfirm={confirmEdit}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
