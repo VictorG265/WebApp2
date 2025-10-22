@@ -10,14 +10,21 @@ function App() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const [currentUser, setCurrentUser] = useState(null);
   const confirmAuth = () => setIsAuthenticated(true);
 
   return (
     <Routes>
       <Route
         path="/login"
-        element={<AuthModal onAuthSuccess={confirmAuth} />}
+        element={
+        <AuthModal
+          onAuthSuccess={(user) => {
+            setCurrentUser(user);
+            confirmAuth();
+          }}
+        />
+      }
       />
       <Route
         path="/"

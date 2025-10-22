@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function Form({ onAddUser }) {
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+function Form({ onAddUser, onUpdateUser, editingUser }) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: ''
+  });
+
+  useEffect(() => {
+    if (editingUser) {
+      setFormData(editingUser);
+    }
+  }, [editingUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -10,18 +20,22 @@ function Form({ onAddUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.firstName && formData.lastName && formData.email) {
+    if (editingUser) {
+      onUpdateUser(formData);
+    } else {
       onAddUser(formData);
-      setFormData({ firstName: '', lastName: '', email: '' });
     }
+    setFormData({ firstName: '', lastName: '', email: '' });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input name="firstName" placeholder="FirstName" value={formData.firstName} onChange={handleChange} />
-      <input name="lastName" placeholder="LastName" value={formData.lastName} onChange={handleChange} />
-      <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-      <button type="submit" style={{ backgroundColor: 'red', color: 'white' }}>Add User</button>
+      <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="FirstName" />
+      <input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="LastName" />
+      <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
+      <button type="submit" style={{ backgroundColor: editingUser ? 'orange' : 'red', color: 'white' }}>
+        {editingUser ? 'Update User' : 'Add User'}
+      </button>
     </form>
   );
 }

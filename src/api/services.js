@@ -1,42 +1,59 @@
-const ClientAPI = {
-    clients: [
-        { id: 1, name: "Ben", surname: "Blocker", phone: "+123(45)1234567" },
-        { id: 2, name: "Alice", surname: "Smith", phone: "+123(45)2345678" },
-        { id: 3, name: "John", surname: "Doe", phone: "+123(45)3456789" },
-        { id: 4, name: "Jane", surname: "Roe", phone: "+123(45)4567890" },
-        { id: 5, name: "Michael", surname: "Johnson", phone: "+123(45)5678901" },
-        { id: 6, name: "Emily", surname: "Davis", phone: "+123(45)6789012" },
-        { id: 7, name: "David", surname: "Wilson", phone: "+123(45)7890123" },
-        { id: 8, name: "Emma", surname: "Brown", phone: "+123(45)8901234" }
+const STORAGE_KEY = 'registeredUsers';
+
+const UserAPI = {
+
+    users:JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+        { username: "admin", password: "1234", name: "Администратор" },
+        { username: "user1", password: "pass1", name: "Иван" },
+        { username: "user2", password: "pass2", name: "Ольга" }
     ],
-    all: function () {
-        return this.clients;
+
+    getAll: function () {
+        return this.users;
     },
+
     get: function (id) {
         const isClient = (p) => p.id === id;
-        return this.clients.find(isClient);
+        return this.users.find(isClient);
     },
+
     delete: function (id) {
         const isNotDelClient = (p) => p.id !== id;
-        this.clients = this.clients.filter(isNotDelClient);
+        this.users = this.users.filter(isNotDelClient);
         return true;
     },
-    add: function (client) {
-        if (!client.id)
-            client = {
-                ...client,
+
+    add: function (user) {
+        if (!user.id)
+            user = {
+                ...user,
                 id:
-                    this.clients.reduce((prev, current) => {
+                    this.users.reduce((prev, current) => {
                         return prev.id > current.id ? prev : current;
                     }, 0).id + 1,
             };
-        this.clients = [...this.clients, client];
-        return client;
+        this.users = [...this.users, user];
+        return user;
     },
-    update: function (client) {
+
+    update: function (user) {
         this.get();
-        this.clients.shift(client);
-        return client;
+        this.users.shift(user);
+        return user;
+    },
+
+    authenticate: function (username, password) {
+        return this.users.find(
+            (user) => user.username === username && user.password === password
+        );
+    },
+
+    register: function (newUser) {
+        const exists = this.users.some((u) => u.username === newUser.username);
+        if (exists) return false;
+        this.users.push(newUser);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.users));
+        return true;
     },
 };
-export default ClientAPI;
+export default UserAPI;

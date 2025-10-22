@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import UserAPI from '../api/services';
 
 function AuthModal({ onAuthSuccess }) {
   const [formData, setFormData] = useState({ username: '', password: '' });
+  const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -13,20 +15,45 @@ function AuthModal({ onAuthSuccess }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Простейшая проверка (можно заменить на API-запрос)
-    if (formData.username === 'admin' && formData.password === '1234') {
-      onAuthSuccess();       // обновляем состояние авторизации
-      navigate('/');         // переходим на защищённую страницу
+
+    if (isRegistering) {
+      const success = UserAPI.register({
+        username: formData.username,
+        password: formData.password,
+        name: formData.name || formData.username
+      });
+      if (success) {
+        alert('Регистрация успешна! Теперь войдите.');
+        setIsRegistering(false);
+        setFormData({ username: '', password: '', name: '' });
+      } else {
+        alert('Пользователь с таким логином уже существует.');
+      }
     } else {
-      alert('Неверные данные');
+      const matchedUser = UserAPI.authenticate(formData.username, formData.password);
+      if (matchedUser) {
+        onAuthSuccess(matchedUser);
+        navigate('/');
+      } else {
+        alert('Неверные данные');
+      }
     }
   };
 
   return (
     <div className="auth-overlay">
       <div className="auth-modal">
-        <h2>Авторизация</h2>
+        <h2>{isRegistering ? 'Регистрация' : 'Авторизация'}</h2>
         <form onSubmit={handleSubmit}>
+          {isRegistering && (
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Имя"
+              required
+            />
+          )}
           <input
             name="username"
             value={formData.username}
@@ -42,8 +69,14 @@ function AuthModal({ onAuthSuccess }) {
             placeholder="Пароль"
             required
           />
-          <button type="submit">Войти</button>
+          <button type="submit">{isRegistering ? 'Зарегистрироваться' : 'Войти'}</button>
         </form>
+        <p style={{ marginTop: '10px' }}>
+          {isRegistering ? 'Уже есть аккаунт?' : 'Нет аккаунта?'}{' '}
+          <button onClick={() => setIsRegistering(!isRegistering)}>
+            {isRegistering ? 'Войти' : 'Регистрация'}
+          </button>
+        </p>
       </div>
     </div>
   );
