@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import UserAPI from '../api/services';
+import { useDispatch } from 'react-redux';
+import { setCurrentUser } from '../redux/Actions/UserActions';
 
 function AuthModal({ onAuthSuccess }) {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +35,7 @@ function AuthModal({ onAuthSuccess }) {
     } else {
       const matchedUser = UserAPI.authenticate(formData.username, formData.password);
       if (matchedUser) {
-        onAuthSuccess(matchedUser);
+        dispatch(setCurrentUser(matchedUser));
         navigate('/');
       } else {
         alert('Неверные данные');

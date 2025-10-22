@@ -4,40 +4,56 @@ import AuthModal from './components/AuthModal';
 import Form from './components/Form';
 import Table from './components/Table';
 import EditModal from './components/EditModal';
+import { useSelector, useDispatch } from 'react-redux';
+import { addUser, deleteUser, updateUser } from './redux/Actions/UserActions';
+import { setCurrentUser, logoutUser } from './redux/Actions/UserActions';
+import { useNavigate } from 'react-router-dom';
+
+
+
 
 function App() {
-  const [users, setUsers] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const confirmAuth = () => setIsAuthenticated(true);
+  const users = useSelector((state) => state.userState.users);
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.userState.currentUser);
+  const navigate = useNavigate();
+
 
   return (
     <Routes>
       <Route
         path="/login"
         element={
-        <AuthModal
-          onAuthSuccess={(user) => {
-            setCurrentUser(user);
-            confirmAuth();
-          }}
-        />
+        <AuthModal/>
       }
       />
       <Route
         path="/"
         element={
-          isAuthenticated ? (
+          currentUser ? (
             <div className="App">
               <h1>User Management</h1>
+              {currentUser && (
+                <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+                  <span>Вы вошли как: <strong>{currentUser.name}</strong></span>
+                  <button
+                    onClick={() => {
+                      dispatch(logoutUser());
+                      navigate('/login');
+                    }}
+                    style={{ marginLeft: '10px' }}
+                  >
+                    Выйти
+                  </button>
+                </div>
+              )}
+
               <Form
-                onAddUser={(user) => setUsers([...users, user])}
+                onAddUser={(user) => dispatch(addUser(user))}
                 onUpdateUser={(user) => {
-                  const newUsers = [...users];
-                  newUsers[editingIndex] = user;
-                  setUsers(newUsers);
+                  dispatch(updateUser(user));
                   setEditingIndex(null);
                 }}
                 editingUser={editingIndex !== null ? users[editingIndex] : null}
@@ -45,7 +61,7 @@ function App() {
               <Table
                 users={users}
                 onDelete={(index) => {
-                  setUsers(users.filter((_, i) => i !== index));
+                  dispatch(deleteUser(users[index].id));
                   if (editingIndex === index) setEditingIndex(null);
                 }}
                 onEdit={(index) => {
@@ -57,10 +73,7 @@ function App() {
                 <EditModal
                   user={users[editingIndex]}
                   onConfirm={(updatedUser) => {
-                    const newUsers = [...users];
-                    newUsers.splice(editingIndex, 1);
-                    newUsers.push(updatedUser);
-                    setUsers(newUsers);
+                    dispatch(updateUser(updatedUser));
                     setEditingIndex(null);
                     setIsModalOpen(false);
                   }}
