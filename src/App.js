@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import React, { useState } from 'react';
-import AuthModal from './components/AuthModal';
-import Form from './components/Form';
-import Table from './components/Table';
-import EditModal from './components/EditModal';
+import AuthModal from './views/components/AuthModal';
+import Form from './views/components/Form';
+import Table from './views/components/Table';
+import EditModal from './views/components/EditModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { addUser, deleteUser, updateUser } from './redux/Actions/UserActions';
 import { setCurrentUser, logoutUser } from './redux/Actions/UserActions';

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import '../App.css';
+import '../../App.css';
 import { useNavigate } from 'react-router-dom';
-import UserAPI from '../api/services';
+import UserAPI from '../../api/services';
 import { useDispatch } from 'react-redux';
-import { setCurrentUser } from '../redux/Actions/UserActions';
+import { setCurrentUser } from '../../redux/Actions/UserActions';
 
 function AuthModal({ onAuthSuccess }) {
   const [formData, setFormData] = useState({ username: '', password: '' });
