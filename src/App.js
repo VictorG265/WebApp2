@@ -5,8 +5,14 @@ import Form from './views/components/Form';
 import Table from './views/components/Table';
 import EditModal from './views/components/EditModal';
 import { useSelector, useDispatch } from 'react-redux';
-import { addUser, deleteUser, updateUser } from './redux/Actions/UserActions';
-import { setCurrentUser, logoutUser } from './redux/Actions/UserActions';
+import {
+  addUser,
+  deleteUser,
+  updateUser,
+  setCurrentUser,
+  logoutUser,
+} from './redux/slices/userSlice';
+
 import { useNavigate } from 'react-router-dom';
 
 

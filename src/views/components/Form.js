@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addUser, updateUser } from '../../redux/Actions/UserActions';
-
+import { addUser, updateUser } from '../../redux/slices/userSlice';
 function Form() {
   const dispatch = useDispatch();
   const editingUser = useSelector((state) =>

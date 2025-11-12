@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, setUsers } from '../../redux/Actions/UserActions';
+import { deleteUser, setUsers } from '../../redux/slices/userSlice';
 
 function Table() {
   const users = useSelector((state) => state.userState.users);
