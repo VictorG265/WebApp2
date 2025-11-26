@@ -1,10 +1,43 @@
 .App {
+  min-height: 100vh; /* растягиваем на всю высоту окна */
+  width: 100%;
   text-align: center;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.App.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.App.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.App.dark table {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.App.dark input {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+.App.dark .modal,
+.App.dark .auth-modal {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+.App.dark .App-header {
+  background-color: #121212;
+  color: #ffffff;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -43,6 +76,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
+  color: #ffffff;
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
@@ -75,6 +109,7 @@
 
 .auth-modal {
   background-color: white;
+  color: #ffffff;
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);

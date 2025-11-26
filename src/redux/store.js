@@ -1,9 +1,13 @@
-import { createStore } from 'redux';
-import rootReducer from './reducers'; // убедись, что путь ведёт к redux/reducers/index.js
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer from './slices/userSlice';
+import themeReducer from './slices/themeSlice';
 
-const store = createStore(
-  rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+const store = configureStore({
+  reducer: {
+    userState: userReducer,
+    themeState: themeReducer,
+  },
+  devTools: true,
+});
 
 export default store;
