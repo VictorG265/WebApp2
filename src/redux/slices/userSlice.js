@@ -4,7 +4,7 @@ const initialState = {
   users: [],
   currentUser: null,
 };
-
+// Первая загрузка пользователей (CreateAsyncActions)
 const userSlice = createSlice({
   name: 'user',
   initialState,

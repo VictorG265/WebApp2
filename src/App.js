@@ -1,104 +1,161 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
 import React, { useState } from 'react';
-import AuthModal from './views/components/AuthModal';
-import Form from './views/components/Form';
-import Table from './views/components/Table';
-import EditModal from './views/components/EditModal';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleTheme } from './redux/slices/themeSlice';
 import {
   addUser,
   deleteUser,
   updateUser,
-  setCurrentUser,
   logoutUser,
 } from './redux/slices/userSlice';
-import { useNavigate } from 'react-router-dom';
 
+import AuthModal from './views/components/AuthModal';
+import Form from './views/components/Form';
+import UserTable from './views/components/Table';
+import EditModal from './views/components/EditModal';
 
-
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 
 function App() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const users = useSelector((state) => state.userState.users);
-  const theme = useSelector((state) => state.themeState.theme);
-  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userState.currentUser);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  console.log('Текущая тема:', theme);
+
+  const [themeMode, setThemeMode] = useState('light');
+  const muiTheme = createTheme({
+    palette: {
+      mode: themeMode,
+    },
+  });
+
+  const toggleTheme = () => {
+    setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  // глобальный обработчик с задержкой
+  const withLoading = (action) => {
+    setLoading(true);
+    setTimeout(() => {
+      action();
+      setLoading(false);
+    }, 500);
+  };
 
   return (
-    <div className={`App ${theme}`}>
-      <Routes>
-        <Route
-          path="/login"
-          element={
-          <AuthModal/>
-        }
+    <ThemeProvider theme={muiTheme}>
+      <CssBaseline />
+      {/* глобальный индикатор загрузки */}
+      {loading && (
+        <LinearProgress
+          variant="indeterminate"
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            
+            width: '100%',
+            zIndex: 2000,
+          }}
         />
-        <Route
-          path="/"
-          element={
-            currentUser ? (
-              <div className={'App ${theme}'}>
-                <h1>User Management</h1>
-                <button onClick={() => dispatch(toggleTheme())}>
-                  Переключить тему
-                </button>
-                {currentUser && (
-                  <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-                    <span>Вы вошли как: <strong>{currentUser.name}</strong></span>
-                    <button
+      )}
+      <Box sx={{ minHeight: '100vh', p: 2 }}>
+        <Routes>
+          <Route path="/login" element={<AuthModal />} />
+          <Route
+            path="/"
+            element={
+              currentUser ? (
+                <>
+                  <Typography variant="h4" gutterBottom>
+                    User Management
+                  </Typography>
+
+                  <Button
+                    variant="contained"
+                    onClick={toggleTheme}
+                    sx={{ mb: 2 }}
+                  >
+                    Переключить тему
+                  </Button>
+
+                  <Box sx={{ textAlign: 'right', mb: 2 }}>
+                    <Typography variant="body1" component="span">
+                      Вы вошли как: <strong>{currentUser.name}</strong>
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
                       onClick={() => {
-                        dispatch(logoutUser());
-                        navigate('/login');
+                        withLoading(() => {
+                          dispatch(logoutUser());
+                          navigate('/login');
+                        });
                       }}
-                      style={{ marginLeft: '10px' }}
+                      sx={{ ml: 2 }}
                     >
                       Выйти
-                    </button>
-                  </div>
-                )}
+                    </Button>
+                  </Box>
 
-                <Form
-                  onAddUser={(user) => dispatch(addUser(user))}
-                  onUpdateUser={(user) => {
-                    dispatch(updateUser(user));
-                    setEditingIndex(null);
-                  }}
-                  editingUser={editingIndex !== null ? users[editingIndex] : null}
-                />
-                <Table
-                  users={users}
-                  onDelete={(index) => {
-                    dispatch(deleteUser(users[index].id));
-                    if (editingIndex === index) setEditingIndex(null);
-                  }}
-                  onEdit={(index) => {
-                    setEditingIndex(index);
-                    setIsModalOpen(true);
-                  }}
-                />
-                {isModalOpen && (
-                  <EditModal
-                    user={users[editingIndex]}
-                    onConfirm={(updatedUser) => {
-                      dispatch(updateUser(updatedUser));
-                      setEditingIndex(null);
-                      setIsModalOpen(false);
-                    }}
-                    onClose={() => setIsModalOpen(false)}
+                  <Form
+                    onAddUser={(user) =>
+                      withLoading(() => dispatch(addUser(user)))
+                    }
+                    onUpdateUser={(user) =>
+                      withLoading(() => {
+                        dispatch(updateUser(user));
+                        setEditingIndex(null);
+                      })
+                    }
+                    editingUser={editingIndex !== null ? users[editingIndex] : null}
                   />
-                )}
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-      </Routes>
-    </div>
+
+                  <UserTable
+                    users={users}
+                    onDelete={(index) =>
+                      withLoading(() => {
+                        dispatch(deleteUser(users[index].id));
+                        if (editingIndex === index) setEditingIndex(null);
+                      })
+                    }
+                    onEdit={(index) => {
+                      setEditingIndex(index);
+                      setIsModalOpen(true);
+                    }}
+                  />
+
+                  {isModalOpen && (
+                    <EditModal
+                      user={users[editingIndex]}
+                      onConfirm={(updatedUser) =>
+                        withLoading(() => {
+                          dispatch(updateUser(updatedUser));
+                          setEditingIndex(null);
+                          setIsModalOpen(false);
+                        })
+                      }
+                      onClose={() => setIsModalOpen(false)}
+                    />
+                  )}
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+        </Routes>
+      </Box>
+    </ThemeProvider>
   );
 }
 

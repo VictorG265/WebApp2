@@ -1,60 +1,55 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser, setUsers } from '../../redux/slices/userSlice';
+import {
+  Table, TableHead, TableRow, TableCell, TableBody,
+  Button, Paper, Typography
+} from '@mui/material';
 
-function Table() {
-  const users = useSelector((state) => state.userState.users);
-  const dispatch = useDispatch();
-
-  const handleDelete = (index) => {
-    const userToDelete = users[index];
-    dispatch(deleteUser(userToDelete.id));
-  };
-
-  const handleEdit = (index) => {
-    const updatedUsers = [...users];
-    const editingUser = updatedUsers[index];
-    dispatch(setUsers(updatedUsers)); // если нужно сохранить порядок
-    dispatch({ type: 'SET_EDITING_USER', payload: editingUser }); // временный action
-  };
-
+function UserTable({ users, onDelete, onEdit }) {
   return (
-    <div>
-      <h2>Users</h2>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>FirstName</th>
-            <th>LastName</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Paper elevation={3} sx={{ p: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        Users
+      </Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>№</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {users.map((user, index) => (
-            <tr key={user.id}>
-              <td>{index + 1}</td>
-              <td>{user.firstName}</td>
-              <td>{user.lastName}</td>
-              <td>{user.email}</td>
-              <td>
-                <button onClick={() => handleEdit(index)} style={{ marginRight: '8px' }}>
+            <TableRow key={user.id}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{user.firstName}</TableCell>
+              <TableCell>{user.lastName}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => onEdit(index)}   // вызываем пропс
+                  sx={{ mr: 1 }}
+                >
                   Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(index)}
-                  style={{ backgroundColor: 'red', color: 'white' }}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => onDelete(index)} // вызываем пропс
                 >
                   Delete
-                </button>
-              </td>
-            </tr>
+                </Button>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Paper>
   );
 }
 
-export default Table;
+export default UserTable;
