@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addUser, deleteUser, updateUser, logoutUser } from '../../redux/slices/userSlice';
+import { addUserAsync, updateUserAsync, deleteUserAsync, logoutUser } from '../../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { Typography, Button, Box, LinearProgress } from '@mui/material';
 
@@ -8,7 +8,6 @@ import Form from '../components/Form';
 import UserTable from '../components/Table';
 import EditModal from '../components/EditModal';
 import { useThemeMode } from '../../context/ThemeContext';
-import useLoading from '../../hooks/useLoading';
 
 function UserPage() {
   const [editingIndex, setEditingIndex] = useState(null);
@@ -19,13 +18,12 @@ function UserPage() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { toggleTheme } = useThemeMode();
-  const { loading, withLoading } = useLoading();
+  const status = useSelector((state) => state.userState.status);
 
   return (
     <Box sx={{ minHeight: '100vh', p: 2 }}>
-      {loading && (
+      {status === 'loading' && (
         <LinearProgress
           variant="indeterminate"
           sx={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000 }}
@@ -48,10 +46,8 @@ function UserPage() {
           variant="outlined"
           color="secondary"
           onClick={() => {
-            withLoading(() => {
               dispatch(logoutUser());
               navigate('/login');
-            });
           }}
           sx={{ ml: 2 }}
         >
@@ -60,24 +56,20 @@ function UserPage() {
       </Box>
 
       <Form
-        onAddUser={(user) => withLoading(() => dispatch(addUser(user)))}
-        onUpdateUser={(user) =>
-          withLoading(() => {
-            dispatch(updateUser(user));
+        onAddUser={(user) => dispatch(addUserAsync(user))}
+        onUpdateUser={(user) => {
+            dispatch(updateUserAsync(user));
             setEditingIndex(null);
-          })
-        }
+        }}
         editingUser={editingIndex !== null ? users[editingIndex] : null}
       />
 
       <UserTable
         users={users}
-        onDelete={(index) =>
-          withLoading(() => {
-            dispatch(deleteUser(users[index].id));
-            if (editingIndex === index) setEditingIndex(null);
-          })
-        }
+        onDelete={(index) => {
+          dispatch(deleteUserAsync(users[index].id));
+          if (editingIndex === index) setEditingIndex(null);
+        }}
         onEdit={(index) => {
           setEditingIndex(index);
           setIsModalOpen(true);
@@ -87,13 +79,11 @@ function UserPage() {
       {isModalOpen && (
         <EditModal
           user={users[editingIndex]}
-          onConfirm={(updatedUser) =>
-            withLoading(() => {
-              dispatch(updateUser(updatedUser));
+          onConfirm={(updatedUser) => {
+              dispatch(updateUserAsync(updatedUser));
               setEditingIndex(null);
               setIsModalOpen(false);
-            })
-          }
+            }}
           onClose={() => setIsModalOpen(false)}
         />
       )}

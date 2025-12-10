@@ -5,7 +5,6 @@ import UserAPI from '../../api/services';
 import { useDispatch } from 'react-redux';
 import { setCurrentUser } from '../../redux/slices/userSlice';
 
-
 function AuthModal({ onAuthSuccess }) {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [isRegistering, setIsRegistering] = useState(false);
